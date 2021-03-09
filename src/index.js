@@ -16,7 +16,7 @@ function checksExistsUserAccount(request, response, next) {
   const user = users.find(item => item.username === username)
 
   if (!user) {
-    return response.status(401).json({error: "user not found!"})
+    return response.status(404).json({error: "user not found!"})
   }
 
   request.user = user
@@ -65,7 +65,7 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
 
   user.todos.push(todo)
 
-  return response.status(201).json(user)
+  return response.status(201).json(todo)
 });
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
@@ -76,17 +76,17 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   const checkIfTodoExists = user.todos.some(todo => todo.id === id)
 
   if (!checkIfTodoExists) {
-    return response.status(400).json({ error: "Todo id not found!" })
+    return response.status(404).json({ error: "Todo id not found!" })
   }
 
   user.todos.map(todo => {
     if (todo.id === id) {
       todo.title = title
       todo.deadline = new Date(deadline)
+      return response.status(201).json(todo)
     }
   })
 
-  return response.status(201).json(user)
 
 });
 
@@ -97,16 +97,16 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
   const checkIfTodoExists = user.todos.some(todo => todo.id === id)
 
   if (!checkIfTodoExists) {
-    return response.status(400).json({ error: "Todo id not found!" })
+    return response.status(404).json({ error: "Todo id not found!" })
   }
 
   user.todos.map(todo => {
     if (todo.id === id) {
       todo.done = true
+      return response.status(201).json(todo)
     }
   })
 
-  return response.status(201).json(user)
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
@@ -116,7 +116,7 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
   const checkIfTodoExists = user.todos.some(todo => todo.id === id)
 
   if (!checkIfTodoExists) {
-    return response.status(400).json({ error: "Todo id not found!" })
+    return response.status(404).json({ error: "Todo id not found!" })
   }
 
   user.todos.map(todo => {
@@ -125,7 +125,7 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
     }
   })
 
-  return response.json(user)
+  return response.status(204).json()
 });
 
 module.exports = app;
